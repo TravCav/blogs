@@ -1,10 +1,11 @@
-// A Hello World! program in C#.
+/*
+Lookin at your bits
+ */
 using System; 
 namespace BlogStuff {
  
-
-    pubilc class Bitwise {
-         
+    public class Bitwise {
+         [Flags]
         enum UserPermissions {
                 View = 1,
                 Create = 2, 
@@ -16,14 +17,14 @@ namespace BlogStuff {
 
         public static void Main() {
 
-            
-
             /*
             00000001    // View = 1
             00010000    // ViewPayRates = 16
-            00010001    // myPermissions = 17
+            00010001    // viewPermissions = 17
             */
-            var myPermissions = UserPermissions.View | UserPermissions.ViewPayRates; 
+          
+            var viewPermissions = UserPermissions.View | UserPermissions.ViewPayRates;
+            var myPermissions = viewPermissions; 
 
 
             /*
@@ -40,14 +41,14 @@ namespace BlogStuff {
                 Console.WriteLine("I can edit user info"); 
             }
 
-            myPermissions = myPermissions | Create;
+            myPermissions = myPermissions | UserPermissions.Create;
             /*
             00010001    // myPermissions = 17
             00000010    // Create = 2
             00010011    // myPermissions = 19
             */
 
-            if (myPermissions == 17){
+            if (myPermissions == viewPermissions){
                 Console.WriteLine("I only have View and ViewPayRates and nothing else.");
             }
 
@@ -56,15 +57,15 @@ namespace BlogStuff {
             00010001    // 17
             00010001    // 17
             */
-            int canJustView = UserPermissions.View | UserPermissions.ViewPayRates;
+            var canJustView = UserPermissions.View | UserPermissions.ViewPayRates;
             
-            if (myPermissions & canJustView == canJustView)
+            if ((myPermissions & canJustView) == canJustView)
             {
                 Console.WriteLine("I have view and ViewPayRates and maybe other things or not.");
             }
 
-            if (myPermissions >= 16){
-                Console.WriteLine("I have admin permisions");
+            if ((int)myPermissions >= 16){
+                Console.WriteLine("I have admin permissions");
             }
             
             
