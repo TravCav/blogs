@@ -70,7 +70,7 @@ namespace BlogStuff {
             
             
             Console.WriteLine("Press any key to exit."); 
-            Console.ReadKey(); 
+            Console.Read(); 
         }
     }
 }
