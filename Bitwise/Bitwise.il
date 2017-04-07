@@ -19,135 +19,147 @@
   .ver 0:0:0:0
 }
 .module Bitwise.exe
-// MVID: {5028A6E8-3DDF-443F-9F07-74E4B98E2A02}
+// MVID: {27E0B3EC-6726-48BF-B441-E26523F39103}
 .imagebase 0x00400000
 .file alignment 0x00000200
 .stackreserve 0x00100000
 .subsystem 0x0003       // WINDOWS_CUI
 .corflags 0x00000001    //  ILONLY
-// Image base: 0x00350000
+// Image base: 0x001D0000
 
 
 // =============== CLASS MEMBERS DECLARATION ===================
 
-.class public auto ansi beforefieldinit BlogStuff.Bitwise
+.class private auto ansi beforefieldinit BlogStuff.Bitwise
        extends [mscorlib]System.Object
 {
-  .class auto ansi sealed nested private UserPermissions
+  .class auto ansi sealed nested private Log
          extends [mscorlib]System.Enum
   {
-    .custom instance void [mscorlib]System.FlagsAttribute::.ctor() = ( 01 00 00 00 ) 
     .field public specialname rtspecialname int32 value__
-    .field public static literal valuetype BlogStuff.Bitwise/UserPermissions View = int32(0x00000001)
-    .field public static literal valuetype BlogStuff.Bitwise/UserPermissions Create = int32(0x00000002)
-    .field public static literal valuetype BlogStuff.Bitwise/UserPermissions Edit = int32(0x00000004)
-    .field public static literal valuetype BlogStuff.Bitwise/UserPermissions Delete = int32(0x00000008)
-    .field public static literal valuetype BlogStuff.Bitwise/UserPermissions ViewPayRates = int32(0x00000010)
-    .field public static literal valuetype BlogStuff.Bitwise/UserPermissions ManageRoles = int32(0x00000020)
-  } // end of class UserPermissions
+    .field public static literal valuetype BlogStuff.Bitwise/Log None = int32(0x00000000)
+    .field public static literal valuetype BlogStuff.Bitwise/Log Debug = int32(0x00000001)
+    .field public static literal valuetype BlogStuff.Bitwise/Log Console = int32(0x00000002)
+    .field public static literal valuetype BlogStuff.Bitwise/Log File = int32(0x00000004)
+    .field public static literal valuetype BlogStuff.Bitwise/Log Db = int32(0x00000008)
+    .field public static literal valuetype BlogStuff.Bitwise/Log Email = int32(0x00000010)
+  } // end of class Log
 
-  .method public hidebysig static void  Main() cil managed
+  .field private static valuetype BlogStuff.Bitwise/Log Logging
+  .method private hidebysig static void  Main(string[] args) cil managed
   {
     .entrypoint
     // 
-    .maxstack  2
-    .locals init (valuetype BlogStuff.Bitwise/UserPermissions V_0,
-             valuetype BlogStuff.Bitwise/UserPermissions V_1,
-             valuetype BlogStuff.Bitwise/UserPermissions V_2,
-             bool V_3)
+    .maxstack  8
     IL_0000:  nop
-    IL_0001:  ldc.i4.s   17
-    IL_0003:  stloc.0
-    IL_0004:  ldloc.0
-    IL_0005:  stloc.1
-    IL_0006:  ldloc.1
-    IL_0007:  ldc.i4.1
-    IL_0008:  and
-    IL_0009:  ldc.i4.1
-    IL_000a:  ceq
-    IL_000c:  ldc.i4.0
-    IL_000d:  ceq
-    IL_000f:  stloc.3
-    IL_0010:  ldloc.3
-    IL_0011:  brtrue.s   IL_0020
-
-    IL_0013:  nop
-    IL_0014:  ldstr      "I can view user info"
-    IL_0019:  call       void [mscorlib]System.Console::WriteLine(string)
-    IL_001e:  nop
-    IL_001f:  nop
-    IL_0020:  ldloc.1
-    IL_0021:  ldc.i4.4
-    IL_0022:  and
-    IL_0023:  ldc.i4.4
-    IL_0024:  ceq
-    IL_0026:  ldc.i4.0
-    IL_0027:  ceq
-    IL_0029:  stloc.3
-    IL_002a:  ldloc.3
-    IL_002b:  brtrue.s   IL_003a
-
-    IL_002d:  nop
-    IL_002e:  ldstr      "I can edit user info"
-    IL_0033:  call       void [mscorlib]System.Console::WriteLine(string)
-    IL_0038:  nop
-    IL_0039:  nop
-    IL_003a:  ldloc.1
-    IL_003b:  ldc.i4.2
-    IL_003c:  or
-    IL_003d:  stloc.1
-    IL_003e:  ldloc.1
-    IL_003f:  ldloc.0
-    IL_0040:  ceq
-    IL_0042:  ldc.i4.0
-    IL_0043:  ceq
-    IL_0045:  stloc.3
-    IL_0046:  ldloc.3
-    IL_0047:  brtrue.s   IL_0056
-
-    IL_0049:  nop
-    IL_004a:  ldstr      "I only have View and ViewPayRates and nothing else."
-    IL_004f:  call       void [mscorlib]System.Console::WriteLine(string)
-    IL_0054:  nop
-    IL_0055:  nop
-    IL_0056:  ldc.i4.s   17
-    IL_0058:  stloc.2
-    IL_0059:  ldloc.1
-    IL_005a:  ldloc.2
-    IL_005b:  and
-    IL_005c:  ldloc.2
-    IL_005d:  ceq
-    IL_005f:  ldc.i4.0
-    IL_0060:  ceq
-    IL_0062:  stloc.3
-    IL_0063:  ldloc.3
-    IL_0064:  brtrue.s   IL_0073
-
-    IL_0066:  nop
-    IL_0067:  ldstr      "I have view and ViewPayRates and maybe other thing"
-    + "s or not."
-    IL_006c:  call       void [mscorlib]System.Console::WriteLine(string)
-    IL_0071:  nop
-    IL_0072:  nop
-    IL_0073:  ldloc.1
-    IL_0074:  ldc.i4.s   16
-    IL_0076:  clt
-    IL_0078:  stloc.3
-    IL_0079:  ldloc.3
-    IL_007a:  brtrue.s   IL_0089
-
-    IL_007c:  nop
-    IL_007d:  ldstr      "I have admin permissions"
-    IL_0082:  call       void [mscorlib]System.Console::WriteLine(string)
-    IL_0087:  nop
-    IL_0088:  nop
-    IL_0089:  ldstr      "Press any key to exit."
-    IL_008e:  call       void [mscorlib]System.Console::WriteLine(string)
-    IL_0093:  nop
-    IL_0094:  call       int32 [mscorlib]System.Console::Read()
-    IL_0099:  pop
-    IL_009a:  ret
+    IL_0001:  ldc.i4.7
+    IL_0002:  stsfld     valuetype BlogStuff.Bitwise/Log BlogStuff.Bitwise::Logging
+    IL_0007:  ldstr      "Gonna log to the debug window, the console, and a "
+    + "file"
+    IL_000c:  call       void BlogStuff.Bitwise::DoLogging(string)
+    IL_0011:  nop
+    IL_0012:  ldstr      "Press any key to exit."
+    IL_0017:  call       void [mscorlib]System.Console::WriteLine(string)
+    IL_001c:  nop
+    IL_001d:  call       int32 [mscorlib]System.Console::Read()
+    IL_0022:  pop
+    IL_0023:  ret
   } // end of method Bitwise::Main
+
+  .method private hidebysig static void  DoLogging(string msg) cil managed
+  {
+    // 
+    .maxstack  2
+    .locals init (bool V_0)
+    IL_0000:  nop
+    IL_0001:  ldsfld     valuetype BlogStuff.Bitwise/Log BlogStuff.Bitwise::Logging
+    IL_0006:  ldc.i4.1
+    IL_0007:  and
+    IL_0008:  ldc.i4.1
+    IL_0009:  ceq
+    IL_000b:  ldc.i4.0
+    IL_000c:  ceq
+    IL_000e:  stloc.0
+    IL_000f:  ldloc.0
+    IL_0010:  brtrue.s   IL_001f
+
+    IL_0012:  nop
+    IL_0013:  ldstr      "Log to debug window"
+    IL_0018:  call       void [mscorlib]System.Console::WriteLine(string)
+    IL_001d:  nop
+    IL_001e:  nop
+    IL_001f:  ldsfld     valuetype BlogStuff.Bitwise/Log BlogStuff.Bitwise::Logging
+    IL_0024:  ldc.i4.2
+    IL_0025:  and
+    IL_0026:  ldc.i4.2
+    IL_0027:  ceq
+    IL_0029:  ldc.i4.0
+    IL_002a:  ceq
+    IL_002c:  stloc.0
+    IL_002d:  ldloc.0
+    IL_002e:  brtrue.s   IL_004e
+
+    IL_0030:  nop
+    IL_0031:  ldstr      "Log to console"
+    IL_0036:  call       void [mscorlib]System.Console::WriteLine(string)
+    IL_003b:  nop
+    IL_003c:  ldstr      "Log: "
+    IL_0041:  ldarg.0
+    IL_0042:  call       string [mscorlib]System.String::Concat(string,
+                                                                string)
+    IL_0047:  call       void [mscorlib]System.Console::WriteLine(string)
+    IL_004c:  nop
+    IL_004d:  nop
+    IL_004e:  ldsfld     valuetype BlogStuff.Bitwise/Log BlogStuff.Bitwise::Logging
+    IL_0053:  ldc.i4.4
+    IL_0054:  and
+    IL_0055:  ldc.i4.4
+    IL_0056:  ceq
+    IL_0058:  ldc.i4.0
+    IL_0059:  ceq
+    IL_005b:  stloc.0
+    IL_005c:  ldloc.0
+    IL_005d:  brtrue.s   IL_006c
+
+    IL_005f:  nop
+    IL_0060:  ldstr      "Log to file"
+    IL_0065:  call       void [mscorlib]System.Console::WriteLine(string)
+    IL_006a:  nop
+    IL_006b:  nop
+    IL_006c:  ldsfld     valuetype BlogStuff.Bitwise/Log BlogStuff.Bitwise::Logging
+    IL_0071:  ldc.i4.8
+    IL_0072:  and
+    IL_0073:  ldc.i4.8
+    IL_0074:  ceq
+    IL_0076:  ldc.i4.0
+    IL_0077:  ceq
+    IL_0079:  stloc.0
+    IL_007a:  ldloc.0
+    IL_007b:  brtrue.s   IL_008a
+
+    IL_007d:  nop
+    IL_007e:  ldstr      "Log to Db"
+    IL_0083:  call       void [mscorlib]System.Console::WriteLine(string)
+    IL_0088:  nop
+    IL_0089:  nop
+    IL_008a:  ldsfld     valuetype BlogStuff.Bitwise/Log BlogStuff.Bitwise::Logging
+    IL_008f:  ldc.i4.s   16
+    IL_0091:  and
+    IL_0092:  ldc.i4.s   16
+    IL_0094:  ceq
+    IL_0096:  ldc.i4.0
+    IL_0097:  ceq
+    IL_0099:  stloc.0
+    IL_009a:  ldloc.0
+    IL_009b:  brtrue.s   IL_00aa
+
+    IL_009d:  nop
+    IL_009e:  ldstr      "Log to email"
+    IL_00a3:  call       void [mscorlib]System.Console::WriteLine(string)
+    IL_00a8:  nop
+    IL_00a9:  nop
+    IL_00aa:  ret
+  } // end of method Bitwise::DoLogging
 
   .method public hidebysig specialname rtspecialname 
           instance void  .ctor() cil managed
@@ -158,6 +170,16 @@
     IL_0001:  call       instance void [mscorlib]System.Object::.ctor()
     IL_0006:  ret
   } // end of method Bitwise::.ctor
+
+  .method private hidebysig specialname rtspecialname static 
+          void  .cctor() cil managed
+  {
+    // 
+    .maxstack  8
+    IL_0000:  ldc.i4.0
+    IL_0001:  stsfld     valuetype BlogStuff.Bitwise/Log BlogStuff.Bitwise::Logging
+    IL_0006:  ret
+  } // end of method Bitwise::.cctor
 
 } // end of class BlogStuff.Bitwise
 

@@ -1,36 +1,9 @@
 
-
-clinic1 = 1
-clinic2 = 2
-clinic3 = 4
-clinic4 = 8
-
-
-i can see: clinic1 | clinic2 | clinic4 = 1 | 2 | 8 = 13
-user has: clinic 3 | clinic 4 = 4 | 8 = 12
-
-01011
-01100
-
-
-
-public bool HasPermissions(Permission userPermissions, Permission permissionsToCheckFor)
-{
-    return permissionsToCheckFor == Permission.None ? 
-        false : 
-        (userPermissions & permissionsToCheckFor) == permissionsToCheckFor;
-}
-
-
-clinics.HasFlag(Clinics.clinic1)
-
-
-
 Flags
 
-Today we're going to be talking about flags and some of the neat things we can do with them.  This is just a neat practice and won't likely be something you'll ever use. It's pretty fun to play with though and there are some actual places where this can be useful.  We'll be getting into some boolean logic, but we'll doing it step by step so make sure you understand each section before moving to the next one. And if anything doesn't make sense leave a comment.  I think everyone will be able to follow along just fine though.
+Today we're going to be talking about flags and some of the neat things we can do with them.  This is just a neat practice and won't likely be something you'll ever use. It's pretty fun to play with though. There are some actual places where this can be useful, but you're not likely to ever need it unless maybe if you're doing something on your Arduino.  We'll be getting into some boolean logic, but we'll doing it step by step so make sure you understand each section before moving to the next one. And if anything doesn't make sense leave a comment.  I think everyone will be able to follow along just fine though.
 
-Let's start off with the scenario that we have 4 clinics, and we need to track which clinics I'm allowed to see.  For simplicity we'll just have 4 clinics and call them clinics one through four instead of coming up with names. And for brevity sometimes we'll call them cl1, cl2, cl3, cl4.  So, let's say I can see clinic 2 and clinic 4. Normally we would just put these in a list of clinics I can see but we're going to do something a little different today. We'll store each one as a flag in a table like so.
+Let's start off with the scenario that we have 4 clinics, and we need to track which clinics I'm allowed to see.  For simplicity we'll just have 4 clinics and call them clinics one through four instead of coming up with names. And for brevity sometimes we'll call them cl1, cl2, cl3, cl4.  So, let's say I can see clinic 2 and clinic 4. Normally we would just put these in a list of clinics, but we're going to do something a little different today. We'll store each one as a flag in a table like so.
 +-----+-----+-----+-----+
 | cl4 | cl3 | cl2 | cl1 |
 +-----+-----+-----+-----+
@@ -76,8 +49,108 @@ Doing an OR with lists combines them.
 Doing an AND does an intersect.
 
 Let's get computery
-Instead of all those messy Y's and N's let's use 0's and 1's respectively. And while we're at it let's get rid of the array too.  From now on we'll just represent things with four 1's and 0's.  Now their combined permissions look like 1100 and cl3 looks like 0100. Hopefully that makes sense? If not then nothing going forward will either.
+Let's get rid of all those messy Y's and N's and instead use 0's and 1's respectively. And while we're at it let's get rid of the array too. Now the combined permissions look like 1100 and cl3 looks like 0100. This is super useful and key to making this whole thing work, because now we can store the string of bits as a int. whaaaaat?  Yeah check it out.
+0001 is 1
+0010 is 2
+0100 is 4
+1000 is 8
+
+You see the pattern right? Hopefully that makes sense? If not then nothing going forward will either.
+
+Blah blah blah words are boring let's look at code.
 
 
+using System;
+using System.Diagnostics;
 
+namespace BlogStuff
+{
+    class Bitwise
+    {
+        /*
+         * First thing's first let's setup an enum to hold all the ways we'll be logging.
+         */
+        private enum Log
+        {
+            None = 0,
+            Debug = 1,
+            Console = 2,
+            File = 4,
+            Db = 8,
+            Email = 16
+        }
 
+        /*
+         * Sweet a global logging setting so we can set the logging level for the whole app.
+         */
+        private static Log Logging = Log.None;
+        static void Main(string[] args)
+        {
+            // Here are those OR's we were talking about.
+            Logging = Log.Debug | Log.Console | Log.File;
+            /*
+             * 00001 debug
+             * 00010 console
+             * 00100 file
+             * 00111 final value
+             */
+            DoLogging("Logging now equals 00111.");
+
+            // We can also remove flags by using a "^" 
+            Logging = Logging ^ Log.File;
+            DoLogging("No more file logging");
+
+            // Or because bitwise operators are just like all other operators we can combine them with the equal operator.
+            // We'll demo by putting file logging back in.
+            Logging |= Log.File;
+            DoLogging("We got file logging back");
+
+            Console.WriteLine("Press any key to exit.");
+            Console.Read();
+        }
+
+        private static void DoLogging(string msg)
+        {
+            Console.WriteLine("Logging: " + Logging);
+            Console.WriteLine(msg);
+            /*
+             * Now we can do a series of AND checks to see which flags are set.
+             */
+
+            if ((Logging & Log.Debug) == Log.Debug)
+            {
+                Console.WriteLine("Log to debug window");
+                // Log to debug window code goes here
+            }
+
+            if ((Logging & Log.Console) == Log.Console)
+            {
+                Console.WriteLine("Log to console");
+                // Log to console code goes here
+            }
+
+            if ((Logging & Log.File) == Log.File)
+            {
+                Console.WriteLine("Log to file");
+
+                // Log to file code goes here
+            }
+
+            if ((Logging & Log.Db) == Log.Db)
+            {
+                Console.WriteLine("Log to Db");
+
+                // Log to db code goes here
+            }
+
+            if ((Logging & Log.Email) == Log.Email)
+            {
+                Console.WriteLine("Log to email");
+
+                // Log to email code goes here
+            }
+
+            Console.WriteLine("");
+        }
+    }
+}
