@@ -1,156 +1,84 @@
 
-Flags
+Wise Bits of bitwise wisdom
+Bitwise operators? Operators that do stuff with bits? Yep of course that's a thing.  Not a thing anyone uses anymore because we have more than enough storage and cpu cycles to spare, but they're still there. So this is just neat stuff and it won't likely be something you'll ever use. It's pretty fun to play with though. There are some actual places where this can be useful, but it's not likely to come up unless maybe if you're doing something on your Arduino or have some other weird use case.  Let's get into some binary and poke around at some boolean logic.
 
-Today we're going to be talking about flags and some of the neat things we can do with them.  This is just a neat practice and won't likely be something you'll ever use. It's pretty fun to play with though. There are some actual places where this can be useful, but you're not likely to ever need it unless maybe if you're doing something on your Arduino.  We'll be getting into some boolean logic, but we'll doing it step by step so make sure you understand each section before moving to the next one. And if anything doesn't make sense leave a comment.  I think everyone will be able to follow along just fine though.
+Let me set the scene. Let's say you have a bunch of flags right? How are you gonna check those flags? IF statements? Yeah, of course. Like one by one though? What if you want to check for multiple flags?  Obviously we can just add more conditions. Yeah just keep adding conditions that'll be fun.  What if we got like 8 flags and we want to make sure we have only a certain three and none of the other ones.  Ugh now we have to check for every stupid flag we do want and we have to also check every flag we don't want.  We don't have time for all that typing. Let's just visualize this for a second.
 
-Let's start off with the scenario that we have 4 clinics, and we need to track which clinics I'm allowed to see.  For simplicity we'll just have 4 clinics and call them clinics one through four instead of coming up with names. And for brevity sometimes we'll call them cl1, cl2, cl3, cl4.  So, let's say I can see clinic 2 and clinic 4. Normally we would just put these in a list of clinics, but we're going to do something a little different today. We'll store each one as a flag in a table like so.
-+-----+-----+-----+-----+
-| cl4 | cl3 | cl2 | cl1 |
-+-----+-----+-----+-----+
-|  Y  |  N  |  Y  |  N  |
-+-----+-----+-----+-----+
-
-Pretty straightforward so far. I little odd that we're listing the clinics in reverse order but it'll make sense when we bring in the binary.  So not we have 4 flags we can represent all combinations of permissions with those 4 flags.  If I said someone had permissions [N,N,N,Y] then you know they can only see clinic 1 and someone with [Y,Y,Y,N] can see everything but clinic 1.  Easy to follow right? So let's pretend we have a user that can see clinic 4 and another user than can see clinic 3. What's an easy way to see and track what clinics they can both see?
-+--------+-----+-----+-----+-----+
-| Person | cl4 | cl3 | cl2 | cl1 |
-+--------+-----+-----+-----+-----+
-| User 1 |  Y  |  N  |  N  |  N  |
-+--------+-----+-----+-----+-----+
-| User 2 |  N  |  Y  |  N  |  N  |
-+--------+-----+-----+-----+-----+
-
-We can look at it and can tell that combined they can see [Y,Y,N,N]. But how do we get the computer to see that? We'll get there, but first let's go over some boolean logic.  What would be the result if we did an OR on each column?  
-Can user 1 or user 2 see cl4? Y
-Can user 1 or user 2 see cl3? Y
-Can user 1 or user 2 see cl2? N
-Can user 1 or user 2 see cl1? N
-
-So our results are [Y,Y,N,N].  Holy crap that's clinic 4 and clinic 3. Sweet we can use OR to condense Y's from multiple rows into one row. This will be on the test.  So now we have one thing we can use to track what they can see together. Not super useful yet but let's just focus on the concepts for now.
-
-The next thing we want to do is check to see if one of them can can see a particular clinic.  Let's check if they can see clinic 3.  Clinic 3 being represented as [N,Y,N,N] and their combined permissions represented as [Y,Y,N,N].  We'll do something like an intersect operation by doing an AND on each column.
-+--------+-----+-----+-----+-----+
-|        | cl4 | cl3 | cl2 | cl1 |
-+--------+-----+-----+-----+-----+
-| Users  |  Y  |  Y  |  N  |  N  |
-+--------+-----+-----+-----+-----+
-|  Cl3   |  N  |  Y  |  N  |  N  |
-+--------+-----+-----+-----+-----+
-
-Is cl4 Y and Y? N
-Is cl3 Y and Y? Y
-Is cl2 Y and Y? N
-Is cl1 Y and Y? N
- 
-Result being [N,Y,N,N], the same as cl3. So if we do an AND we get Y's in our results where the two rows are both Y. We'll dig into this more later but this means we can compare two things and then check if the result is the same as what we compared.  Meaning if we check for cl3, and if the thing we're checking against has cl3, then the result will be the same as the thing we're checking for.  yeah... that... we'll spell it out more later.
-
-Now let's see if we can complicate things a bit while making it clearer at the same time. But first let's recap a few key concepts we've learned so far.
-We can represent sets of things as a list of flags.
-Doing an OR with lists combines them.
-Doing an AND does an intersect.
-
-Let's get computery
-Let's get rid of all those messy Y's and N's and instead use 0's and 1's respectively. And while we're at it let's get rid of the array too. Now the combined permissions look like 1100 and cl3 looks like 0100. This is super useful and key to making this whole thing work, because now we can store the string of bits as a int. whaaaaat?  Yeah check it out.
-0001 is 1
-0010 is 2
-0100 is 4
-1000 is 8
-
-You see the pattern right? Hopefully that makes sense? If not then nothing going forward will either.
-
-Blah blah blah words are boring let's look at code.
-
-
-using System;
-using System.Diagnostics;
-
-namespace BlogStuff
-{
-    class Bitwise
-    {
-        /*
-         * First thing's first let's setup an enum to hold all the ways we'll be logging.
-         */
-        private enum Log
-        {
-            None = 0,
-            Debug = 1,
-            Console = 2,
-            File = 4,
-            Db = 8,
-            Email = 16
-        }
-
-        /*
-         * Sweet a global logging setting so we can set the logging level for the whole app.
-         */
-        private static Log Logging = Log.None;
-        static void Main(string[] args)
-        {
-            // Here are those OR's we were talking about.
-            Logging = Log.Debug | Log.Console | Log.File;
-            /*
-             * 00001 debug
-             * 00010 console
-             * 00100 file
-             * 00111 final value
-             */
-            DoLogging("Logging now equals 00111.");
-
-            // We can also remove flags by using a "^" 
-            Logging = Logging ^ Log.File;
-            DoLogging("No more file logging");
-
-            // Or because bitwise operators are just like all other operators we can combine them with the equal operator.
-            // We'll demo by putting file logging back in.
-            Logging |= Log.File;
-            DoLogging("We got file logging back");
-
-            Console.WriteLine("Press any key to exit.");
-            Console.Read();
-        }
-
-        private static void DoLogging(string msg)
-        {
-            Console.WriteLine("Logging: " + Logging);
-            Console.WriteLine(msg);
-            /*
-             * Now we can do a series of AND checks to see which flags are set.
-             */
-
-            if ((Logging & Log.Debug) == Log.Debug)
-            {
-                Console.WriteLine("Log to debug window");
-                // Log to debug window code goes here
-            }
-
-            if ((Logging & Log.Console) == Log.Console)
-            {
-                Console.WriteLine("Log to console");
-                // Log to console code goes here
-            }
-
-            if ((Logging & Log.File) == Log.File)
-            {
-                Console.WriteLine("Log to file");
-
-                // Log to file code goes here
-            }
-
-            if ((Logging & Log.Db) == Log.Db)
-            {
-                Console.WriteLine("Log to Db");
-
-                // Log to db code goes here
-            }
-
-            if ((Logging & Log.Email) == Log.Email)
-            {
-                Console.WriteLine("Log to email");
-
-                // Log to email code goes here
-            }
-
-            Console.WriteLine("");
-        }
-    }
+if (flag1 == true  && flag2 == false && flag3 == true && flag4 == true && flag5 == false && flag6 == false && flag7 == false && flag8 == false) 
+{ 
+    // code for when only flags 1, 3, and 4 are true
 }
+
+Oh yeah I totally want to come across that while I'm maintaining something.  Let's try refactoring maybe we can simplify a bit.
+
+if ((flag1 && flag3 && flag4) && !(flag2 && flag5 && flag6 && flag7 && flag8)) 
+{ 
+    // code for when only flags 1, 3, and 4 are true
+}
+
+I mean yeah that's a little better but geez man. So much typing. My fingers are exhausted. 
+Before we go on I feel the need to throw in a disclaimer here.  This is for demonstration purposes only. Don't do any of this unless you have really good reason. If you put this in your code I'm not responsible for the actions of the next person that has to maintain your code. But check out this one clever trick that programmers don't want you to know about.
+flags = 1 | 4 | 8;
+if((flags ^ 13) == 0)
+{
+    // code for when only flags 1, 3, and 4 are true
+}
+
+whaaaaaaaa... What just happened? Okay I just threw in a bunch of concepts without explaining any of it, but don't hate me, I'm going to explain everything.  We're going to have to get bitty now. bitten? bitter? bittish? BITWISE! Let's make this a little more maintainable and try to explain it at the same time.  First thing's first, what the deuce is going on with flags = 1 | 4 | 8;.  Well we're using the binary version of each number to represent the bits. Let me write it out and see if that helps anything.
+flag1 = 00000001 = 1
+flag2 = 00000010 = 2
+flag3 = 00000100 = 4
+flag4 = 00001000 = 8
+flag5 = 00010000 = 16
+flag6 = 00100000 = 32
+flag7 = 01000000 = 64
+flag8 = 10000000 = 128
+
+Try not to think of it too much as binary though. Think of it more as 8 placeholders with each bit indicating a flag.  So starting right to left we can see the first bit represents flag 1 and the second bit from the right flag 2 and so on.  The fun part of all this though is that these placeholder ones and zeros are indeed valid binary. So each series of ones and zeros can be converted to an integer number. K great blah blah blah. Let's look at that first statement again and see what else is going on there. What's with the pipes? Great question. I'm glad I asked.  Those are OR operators.  It's doing boolean logic on each bit column and checking for true. Imagine that for each column it's doing an OR truth table. So if flag1's first bit is 1 OR flag3's first bit is 1 OR flag4's first bit is 1 then return 1.  It does it much faster than it sounds. On the cpu it can run the bits through hardware and just get back the answer with little effort. Yeah hardware level math processing going on here. Let's write it all out again just for fun. 
+flag1 = 00000001 = 1
+flag3 = 00000100 = 4
+flag4 = 00001000 = 8
+flags = 00001101 = 13 all the columns that had a 1 get mashed together
+
+Now we see flags is equal to 00001101 or if we convert to decimal we get 13. Amazing! This means that with a single 1 byte integer we can represent any of the 255 combinations of flags. Okay let's go back and clean up the first part by making our flags constants and assigning them their decimal values.  Then we can rewrite flags = 1 | 4 | 8; as flags = flag1 | flag3 | flag4; much more maintainable since now we don't have to know their numbers. Let's also replace that 13 with a variable too.  flags134 = flag1 | flag3 | flag4;  Hopefully your code will have better names.  So what's with the IF statement we had? Let's look at it again with our new variables.
+
+flags = flag1 | flag3 | flag4;
+if((flags ^ flags134) == 0)
+{
+    // code for when only flags 1, 3, and 4 are true
+}
+
+We got OR's under our belts so let's move on to that little caret. That's an XOR(eXclusive OR). This thing tells us when one and only one bit in the column is 1. And as we can see from our example below they're either always 0 or always 1 so we get back all 0's. Telling us that our two variables match bit for bit. I know! Neat right? XOR can be used to remove bits. So essentially what we did was say, if we remove flags 1, 3, and 4 is there nothing left? And we got back all zeros so we know the only flags that existed were 1, 3, and 4.
+00001101 flags
+00001101 flags134
+00000000 all the places one and only one row has a 1
+
+We can use that to modify our list too. We can say flags ^= flag3; and we'll end up with flags = 00001001. Same as flags = flag1 | flag4.
+00001101 flags
+00000100 flags3
+00001001 all the places one and only one row has a 1
+
+Cool now we can add flags with | and remove them with ^.  And yeah they work like any other operator so we can even combine it with = if the language allows it.
+
+That's all fine and good you say. But now you only care about one flag. You just want to see if they have flag3 for some reason. Fair enough. We can see XOR isn't going to help us here. Time to bring in the ampersand! Check out what happens if we do (flags & flags134). It will do the boolean logic AND truth table on each of the bits.  
+00001101 flags
+00001101 flags134
+00001101 all the places both rows were 1 AND 1
+
+Our result is 13. The same as flags134.  It's almost like asking it to tell you all the places the two variables intersect. Let's try it with our current flags value and a different set of flags. Let's say flags 4, 5, and 6.
+00001101 flags
+00111000 flags456
+00001000 all the places both rows were 1 AND 1
+
+In this case our result is 8 or just flag4.  So we could do an IF statement like if((flags & flags456) > 0) and we'd know that the too sets of flags overlapped...somewhere. But we just wanted to check for a single flag so we can ignore all that and just need something like this if((flags & flag3) == flag3))
+00001101 flags
+00000100 flag1
+00000100 all the places both rows were 1 AND 1
+
+If the flag was in there then the result should come out the same as whatever we were checking for. We can do the same if we want to check for multiple flags too.  If we want to check that flags has at least flags 1, 3, and 4 we can check with if((flags & flag134) == flag134)). Granted there might be others, but we know it contains at least 1, 3, and 4.
+
+Just the greatest thing since sliced bread. We didn't go over NOT which is usually a ~ and inverts the bits and there's also << and >> which shift all the bits to the left or right. But that's the gist of it. We can hold flags for days in a single variable. We can store whole subsets and combinations of flags and do quicks checks with a single operation. Maybe you have flags for permissions. Maybe anything above flag4 is an admin role. if (flags > flag4){ //BAM! admin stuff! } That totally works! Maybe you want to track different logging settings. You can store or pass around a single integer and check your flags with quick boolean math in your logging function instead of iterating over lists and arrays.  If your language has enums, you can use that to make your flags more manageable too.  if((logging & log.file) == log.file) seems pretty maintainable. And if you need to make it really readable, C# even has a flags attribute for enums so you can say logging.HasFlag(log.file). HasFlag does sacrifice some performance though because it has to check types. This stuff works in SQL statements too. Imagine doing quick boolean math over a million records on a single column instead of checking column after column.
+
+Another tool in the toolbox.  Use it wisely and don't get too clever with it.
+
+
