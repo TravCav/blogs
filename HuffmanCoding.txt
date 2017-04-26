@@ -1,4 +1,4 @@
-to be or not to be
+"to be or not to be"
 
 18 characters total including spaces. With 8 bit ascii encoding that ends up being 18...bytes... or this 144 bit awesomeness.
 
@@ -8,15 +8,9 @@ to be or not to be
 
 Group them and get the frequencies.
 
-_ 5
-O 4
-T 3
-B 2
-E 2
-N 1
-R 1
+(_) 5, (O) 4, (T) 3, (B) 2, (E) 2, (N) 1, (R) 1
 
-combine smallest frequencies into groups.
+Combine smallest frequencies into groups.
 
 _ 5
 O 4
@@ -27,52 +21,70 @@ N 1 -+
      |--(NR) 2
 R 1 -+
 
-N and R are now a group. The whole group only has a frequency of 2.  We'll only use anything in that group twice. We're going to simplify the tree a bit now.
+We start with our least used letters and we make tree branches. N and R are our first branch. We'll call that branch NR and the whole branch has a frequency of 2. The branches frequency is important because we'll be reordering and making new branches based on that number. For now it's just a 2 like B and E so it can stay were it is. Next we'll make a new branch with (NR) and the next lowest frequency character. In this case E, which should give us an ENR branch. 
 
 _ 5
 O 4
 T 3
 B 2
-E 2 ----+
-        |--(ENR) 4
-(NR) 2 -+
+E 2 ----------+
+              |-(ENR) 4
+N 1 -+        |
+     |-(NR) 2-+
+R 1 -+
 
-Just like before we group the lowest frequency characters. But now this group has a higher frequency than other characters so we'll reorder. And again we'll simplify the tree for now.
+Since our new group has a frequency of 4 so we'll reorder it between O and T. Then just like before we'll group the lowest frequency characters (T) 3 and (B) 2 to get a new (TB) 5 branch and reorder it so it goes between (_) 5 and (O) 4.  
 
 _ 5
+T 3 -+
+     |--(TB) 5
+B 2 -+
 O 4
-(NRE) 4
+E 2 ----------+
+              |-(ENR) 4
+N 1 -+        |
+     |-(NR) 2-+
+R 1 -+
+
+We group (O) 4 with (ENR) 4 and move (OENR) 8 to the top.
+
+O 4 --------------------+
+                        |--(OENR) 8
+E 2 ----------+         |
+              |-(ENR) 4-+
+N 1 -+        |
+     |-(NR) 2-+
+R 1 -+
+_ 5
 T 3 -+
      |--(TB) 5
 B 2 -+
 
-Lather, rinse, repeat.
+Lather, rinse, repeat. (TB) 5 with (_) 5 and move (_TB) 10 to the top. And if we did everything correctly our final group should have all the characters and a frequency of 18.
 
-_ 5
-(TB) 5
-O 4 -----+
-         |--(OENR) 8
-(NRE) 4 -+
+_ 5-----------+
+              |
+T 3 -+        |-(_TB) 10------------+
+     |-(TB) 5-+                     |
+B 2 -+                              |--(_TBOENR) 18
+                                    |
+O 4 --------------------+           |
+                        |--(OENR) 8-+
+E 2 ----------+         |
+              |-(ENR) 4-+
+N 1 -+        |
+     |-(NR) 2-+
+R 1 -+
 
-let it ride
 
-(OENR) 8
-_ 5 ----+
-        |-- (_TB) 10
-(TB) 5 -+
-
-You get the idea.
-
-(_TB) 10 -+
-          |--(_TBOENR) 18
-(OENR) 8 -+
+Now that we have a tree we can start making our new codes. Start at the top of the tree and every time you go up you get a 0 and every time you go down you get a 1.
 
 _ -------0
          |
 T ---0   |-------0
      |---1       |
 B ---1           |
-                 |---
+                 |---<treetop>
 O -----------0   |
              |---1
 E -------0   |
@@ -80,6 +92,8 @@ E -------0   |
 N ---0   |
      |---1
 R ---1
+
+This leaves us with the following codes for each character.
 
 _ 00
 T 010
@@ -93,3 +107,11 @@ R 1111
  47 bits. 1 bit shy of 6 bytes
 
  32.64% or the original ascii encoding.
+
+How do we know if the 1110 in the middle of all that is an N or the end of a 011 and start of a 10? We don't unless we read the whole string.
+
+Unlike ascii, you can't just pick some random multiple of 8 and start reading from that position.
+Have to read from the start to figure out what each bit means. Notice how each encoding is never the beginning of another one?  That means we just need to read the bits from left to right and eventually we'll match on only one thing exactly. 
+
+0 could start _, T, or B, but it doesn't match exactly so we'll have to read in the next bit. 01 matches the start of T and B and now we've excluded _.  One more bit and we have 010 which matches T. Then we start the process over with the next bits until we get a match. This time we only make it two bits before we match 10 with O.  So our first two characters are "TO" and then next two 00 are a space.  And so on and so forth.
+
