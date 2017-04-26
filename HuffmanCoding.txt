@@ -1,0 +1,95 @@
+to be or not to be
+
+18 characters total including spaces. With 8 bit ascii encoding that ends up being 18...bytes... or this 144 bit awesomeness.
+
+011101000110111100100000011000100110010100100000011011110111001000100000011011100110111101110100001000000111010001101111001000000110001001100101
+
+
+
+Group them and get the frequencies.
+
+_ 5
+O 4
+T 3
+B 2
+E 2
+N 1
+R 1
+
+combine smallest frequencies into groups.
+
+_ 5
+O 4
+T 3
+B 2
+E 2
+N 1 -+
+     |--(NR) 2
+R 1 -+
+
+N and R are now a group. The whole group only has a frequency of 2.  We'll only use anything in that group twice. We're going to simplify the tree a bit now.
+
+_ 5
+O 4
+T 3
+B 2
+E 2 ----+
+        |--(ENR) 4
+(NR) 2 -+
+
+Just like before we group the lowest frequency characters. But now this group has a higher frequency than other characters so we'll reorder. And again we'll simplify the tree for now.
+
+_ 5
+O 4
+(NRE) 4
+T 3 -+
+     |--(TB) 5
+B 2 -+
+
+Lather, rinse, repeat.
+
+_ 5
+(TB) 5
+O 4 -----+
+         |--(OENR) 8
+(NRE) 4 -+
+
+let it ride
+
+(OENR) 8
+_ 5 ----+
+        |-- (_TB) 10
+(TB) 5 -+
+
+You get the idea.
+
+(_TB) 10 -+
+          |--(_TBOENR) 18
+(OENR) 8 -+
+
+_ -------0
+         |
+T ---0   |-------0
+     |---1       |
+B ---1           |
+                 |---
+O -----------0   |
+             |---1
+E -------0   |
+         |---1
+N ---0   |
+     |---1
+R ---1
+
+_ 00
+T 010
+B 011
+O 10
+E 110
+N 1110
+R 1111
+
+01010000111100010111100111010010000101000011110
+ 47 bits. 1 bit shy of 6 bytes
+
+ 32.64% or the original ascii encoding.
