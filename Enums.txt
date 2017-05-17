@@ -1,3 +1,24 @@
+no enum in javascript yet
+
+enum static class with constants. inherits enum for features
+javascript doesn't have constants 
+
+duplicate values for unique names
+color.red = 1
+shape.circle = 1
+
+function changeToColor(color.red) {}
+function changeToColor(shape.circle) {}
+
+no way to tell the difference.
+
+ES6
+ constants
+ Symbols
+
+
+C# enums
+
  private sealed class LogClass
         {
             public const int None = 0;
@@ -47,3 +68,6 @@
     .field public static literal valuetype BlogStuff.Bitwise/Log Db = int32(0x00000004)
     .field public static literal valuetype BlogStuff.Bitwise/Log Email = int32(0x00000008)
   } // end of class Log
+
+
+  
