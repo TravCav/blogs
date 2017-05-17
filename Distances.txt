@@ -1,0 +1,17 @@
+Euclidean 
+https://en.wikipedia.org/wiki/Euclidean_distance
+
+Manhattan distance measures distance following only axis-aligned directions.
+https://en.wikipedia.org/wiki/Taxicab_geometry
+
+Hamming distance identifies the difference bit by bit of two strings
+https://en.wikipedia.org/wiki/Hamming_distance
+
+Levenshtein
+https://en.wikipedia.org/wiki/Levenshtein_distance
+
+
+
+
+Cosine similarity is a measure of similarity between two non-zero vectors of an inner product space that measures the cosine of the angle between them.
+https://en.wikipedia.org/wiki/Cosine_similarity
