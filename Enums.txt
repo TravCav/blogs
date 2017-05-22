@@ -1,5 +1,5 @@
 no enum in javascript yet
-
+enums are constraints. javascript doesn't have those.
 enum static class with constants. inherits enum for features
 javascript doesn't have constants 
 
