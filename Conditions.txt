@@ -1,0 +1,146 @@
+So I came across this exciting bit of code on the internet recently and it got the wheels spinning.
+if (directiveToken.Value == "use strict")
+	this.StrictMode = true;
+
+I thought to myself, this is fine... but we can do better right? First thing's first, why aren't there any brackets around that. I mean seriously that's just rude. If they really cared about saving space why didn't they just put it on one line? Whatever, we all have our preferences. 
+Anyway my first thought was we could just combine the two lines into one assignment like so:
+this.StrictMode = (directiveToken.Value == "use strict");
+
+But this would cause a horribly sneaky bug since StrictMode is sometimes set to true earlier in the class and this could sometimes override it with a false.  We need a line that only ever sets it to true.  So that's not so bad. We have a few options available in this situation. 
+
+Option 1: Normal if statement with assignment. Straight forward and easy to read.
+if (directiveToken.Value == "use strict") { this.StrictMode = true; }
+
+Option 2: Bitwise assignment. Concise at the expense of readability.
+this.StrictMode |= (directiveToken.Value == "use strict");
+
+Option 3: OR statement assignment. A little more going on but potential performance gains.
+this.StrictMode = this.StrictMode || (directiveToken.Value == "use strict");
+
+All great options, but let's not make any assumptions about anything. We have computers that can give us real numbers. So I came up with this exciting thingy. The names and faces are changed to protect the innocent. If you want to play along go grab a free copy of LINQPad https://www.linqpad.net/ . Just set the language to C# program and check the output in the Results and IL tabs.
+
+void Main()
+{
+	var sw = new Stopwatch();
+	sw.Start();
+	var someFlag = false;
+	
+	for (int i = 1000000; i >= 0 ; i--)
+	{
+		someFlag = true; // test with true then test with false
+		
+		// option 1
+		////if (HasStuff("stuff 1")) { someFlag = true; }	
+		
+		// option 2
+		////someFlag |= HasStuff("stuff 2");
+		
+		// option 3
+		////someFlag = someFlag || HasStuff("stuff 3");
+	}
+	
+	Console.WriteLine(sw.ElapsedTicks);
+	Console.WriteLine(someFlag);
+}
+
+static bool HasStuff(string thing)
+{
+	return !string.IsNullOrEmpty(thing);
+}
+
+
+I took turns commenting out each option and seeing how many ticks the stopwatch took to run the checks a million times. And each option was also tested once with with someFlag being reset to true on every loop and once with it being reset to false on every loop.
+
+First off I was really curious to see what kind of IL these thing produced.  For those playing along I compiled in optimized mode to keep the IL clean and made smaller versions of each option.
+
+// Option 1
+void Main()
+{
+	var someFlag = true;
+	
+	if (HasStuff("stuff 1"))
+	{
+		someFlag = true;
+	}
+	
+	Console.WriteLine(someFlag);
+}
+
+IL_0000:  ldc.i4.1    // load a 1 onto the stack. because 1 is true.
+IL_0001:  stloc.0     // store the value on top of the stack to local variable 0. aka someFlag
+IL_0003:  ldstr       "stuff 1"	// push "stuff 1" onto the stack
+IL_0008:  call        UserQuery.HasStuff	// call HasStuff. it'll take the value on top of the stack as it's parameter and push it's return value onto the stack.
+IL_000D:  brfalse.s   IL_0011	// if the top of the stack is false then skip to line IL_0011. Skipping the assignment.
+IL_000F:  ldc.i4.1    // push 1(true) onto the stack
+IL_0010:  stloc.0     // store that into local variable 0(someFlag)
+IL_0011:  ldloc.0     // put local variable 0(someFlag) onto the stack and call writeline
+IL_0012:  call        System.Console.WriteLine
+IL_0017:  ret         
+
+So 10 lines of IL isn't so bad.  And reading through we see that it only needs 8 of them if HasStuff returns false.  Despite that, the test code gave me an average of about 6000 ticks regardless of someFlag's value. Even passing in a blank value didn't have much effect on the outcome.
+
+IL needed
+- 10 if true
+- 8 if false
+
+Stopwatch ticks: ~6000
+
+// Option 2
+void Main()
+{
+	var someFlag = true;
+	someFlag |= HasStuff("stuff 2");
+	Console.WriteLine(someFlag);
+}
+
+IL_0000:  ldc.i4.1    // load a 1 onto the stack. because 1 is true.
+IL_0001:  stloc.0     // store the value on top of the stack to local variable 0. aka someFlag
+IL_0002:  ldloc.0     // push 1(true) onto the stack
+IL_0004:  ldstr       "stuff 2" // push "stuff 2" onto the stack
+IL_0009:  call        UserQuery.HasStuff // call HasStuff. it'll take the value on top of the stack as it's parameter and push it's return value onto the stack.
+IL_000E:  or          // Does a bitwise OR of two integer values, returns an integer. In this case a 0 or 1 that will be true/false
+IL_000F:  stloc.0     // Put the result into local variable 0(someFlag)
+IL_0010:  ldloc.0     // put local variable 0(someFlag) onto the stack and call writeline
+IL_0011:  call        System.Console.WriteLine
+IL_0016:  ret         
+
+So despite the C# being smaller the IL still comes out to 10 lines. And despite the conditions we're always going to need all 10 of them. But we do have a performance difference.  If someFlag is reset to false it takes about 7000 ticks and if someFlag is reset to true it takes 8000 ticks.  So that's rubbish. Just goes to show smaller code is not always faster code.
+
+IL needed
+- always 10
+
+Stopwatch ticks: 
+- someFlag false ~7000
+- someFlag true ~8000
+
+// Option 3
+void Main()
+{
+	var someFlag = true;
+	someFlag = someFlag || HasStuff("stuff 3");
+	Console.WriteLine(someFlag);
+}
+
+IL_0000:  ldc.i4.1    // load a 1 onto the stack. because 1 is true.
+IL_0001:  stloc.0     // store the value on top of the stack to local variable 0. aka someFlag
+IL_0002:  ldloc.0     // push local varialbe 0(someFlag) onto the stack
+IL_0003:  brtrue.s    IL_0012	// if it's true then skip to line IL_0012. Skipping any other checks
+IL_0006:  ldstr       "stuff 3"
+IL_000B:  call        UserQuery.HasStuff
+IL_0010:  br.s        IL_0013
+IL_0012:  ldc.i4.1    
+IL_0013:  stloc.0     // someFlag
+IL_0014:  ldloc.0     // put local variable 0(someFlag) onto the stack and call writeline
+IL_0015:  call        System.Console.WriteLine
+IL_001A:  ret         
+
+In this case we get more C# and more IL. We end up with 12 lines of IL and if someFlag is false we have to run through all of them and the tests took about 7000 ticks. But the real magic happens when someFlag is true. We'll still need 9 lines of the IL but since we're doing an OR we don't have to run the HasStuff method at all and we ended up with about 1700 ticks on average.
+
+IL needed
+- 9 if true and ~1700 ticks
+- 12 if false and ~7000 ticks
+
+
+
+
+
