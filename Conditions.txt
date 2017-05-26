@@ -1,12 +1,11 @@
-So I came across this exciting bit of code on the internet recently and it got the wheels spinning.
+So I came across this exciting bit of code on the internet recently. 
 if (directiveToken.Value == "use strict")
 	this.StrictMode = true;
 
-I thought to myself, this is fine... but we can do better right? First thing's first, why aren't there any brackets around that. I mean seriously that's just rude. If they really cared about saving space why didn't they just put it on one line? Whatever, we all have our preferences. 
-Anyway my first thought was we could just combine the two lines into one assignment like so:
+The first thing that caught my attention was, "why are there no brackets!?"  But then I moved on from that and thought, "why not just assign StrictMode the value of the condition?" Like so:
 this.StrictMode = (directiveToken.Value == "use strict");
 
-But this would cause a horribly sneaky bug since StrictMode is sometimes set to true earlier in the class and this could sometimes override it with a false.  We need a line that only ever sets it to true.  So that's not so bad. We have a few options available in this situation. 
+Well, because we only ever want to set it to true. If we did the code above, it would cause a horribly sneaky bug. StrictMode is sometimes set to true earlier in the class, and this could sometimes override it with a false value.  We need a line that only ever sets it to true. That seems reasonable. But we have a few options available. What's the best way to do it?
 
 Option 1: Normal if statement with assignment. Straight forward and easy to read.
 if (directiveToken.Value == "use strict") { this.StrictMode = true; }
@@ -14,7 +13,7 @@ if (directiveToken.Value == "use strict") { this.StrictMode = true; }
 Option 2: Bitwise assignment. Concise at the expense of readability.
 this.StrictMode |= (directiveToken.Value == "use strict");
 
-Option 3: OR statement assignment. A little more going on but potential performance gains.
+Option 3: OR statement assignment. A little more going on but potential performance gains, since it doesn't execute any code after it finds a true value.
 this.StrictMode = this.StrictMode || (directiveToken.Value == "use strict");
 
 All great options, but let's not make any assumptions about anything. We have computers that can give us real numbers. So I came up with this exciting thingy. The names and faces are changed to protect the innocent. If you want to play along go grab a free copy of LINQPad https://www.linqpad.net/ . Just set the language to C# program and check the output in the Results and IL tabs.
