@@ -2,10 +2,10 @@ So I came across this exciting bit of code on the internet recently.
 if (directiveToken.Value == "use strict")
 	this.StrictMode = true;
 
-The first thing that caught my attention was, "why are there no brackets!?"  But then I moved on from that and thought, "why not just assign StrictMode the value of the condition?" Like so:
+First thing that caught my attention was, "why are there no brackets!?"  But after getting over that I thought, "why not just assign StrictMode the value of the condition?" Like so:
 this.StrictMode = (directiveToken.Value == "use strict");
 
-Well, because we only ever want to set it to true. If we did the code above, it would cause a horribly sneaky bug. StrictMode is sometimes set to true earlier in the class, and this could sometimes override it with a false value.  We need a line that only ever sets it to true. That seems reasonable. But we have a few options available. What's the best way to do it?
+Well, because the original functionality is that it only ever sets StrictMode to true. If we did the code above, it would cause a horribly sneaky bug. StrictMode is sometimes set to true earlier in the class, and the above code could sometimes override it with a false value.  We need a line that only ever sets StrictMode to true. That seems reasonable. But we have a few options available. So what's the best way to do it?
 
 Option 1: Normal if statement with assignment. Straight forward and easy to read.
 if (directiveToken.Value == "use strict") { this.StrictMode = true; }
@@ -16,7 +16,9 @@ this.StrictMode |= (directiveToken.Value == "use strict");
 Option 3: OR statement assignment. A little more going on but potential performance gains, since it doesn't execute any code after it finds a true value.
 this.StrictMode = this.StrictMode || (directiveToken.Value == "use strict");
 
-All great options, but let's not make any assumptions about anything. We have computers that can give us real numbers. So I came up with this exciting thingy. The names and faces are changed to protect the innocent. If you want to play along go grab a free copy of LINQPad https://www.linqpad.net/ . Just set the language to C# program and check the output in the Results and IL tabs.
+All great options, but let's not make any assumptions about anything. We have computers that can give us real numbers. If you want to play along go grab a free copy of LINQPad https://www.linqpad.net/ . Just set the language to C# program and check out the output in the Results and IL tabs.
+
+I took turns uncommenting each option and seeing how many ticks of the stopwatch it took to run the checks a million times. Also, each option was also tested once with with someFlag being reset to true on every loop and once with it being reset to false on every loop.
 
 void Main()
 {
@@ -48,9 +50,7 @@ static bool HasStuff(string thing)
 }
 
 
-I took turns commenting out each option and seeing how many ticks the stopwatch took to run the checks a million times. And each option was also tested once with with someFlag being reset to true on every loop and once with it being reset to false on every loop.
-
-First off I was really curious to see what kind of IL these thing produced.  For those playing along I compiled in optimized mode to keep the IL clean and made smaller versions of each option.
+First off I was really curious to see what kind of IL these thing produced.  For those playing along I made smaller versions of each option and compiled in optimized mode to keep the IL small.
 
 // Option 1
 void Main()
@@ -65,14 +65,14 @@ void Main()
 	Console.WriteLine(someFlag);
 }
 
-IL_0000:  ldc.i4.1    // load a 1 onto the stack. because 1 is true.
-IL_0001:  stloc.0     // store the value on top of the stack to local variable 0. aka someFlag
-IL_0003:  ldstr       "stuff 1"	// push "stuff 1" onto the stack
+IL_0000:  ldc.i4.1    						// load a 1 onto the stack. because 1 is true.
+IL_0001:  stloc.0     						// store the value on top of the stack to local variable 0. aka someFlag
+IL_0003:  ldstr       "stuff 1"				// push "stuff 1" onto the stack
 IL_0008:  call        UserQuery.HasStuff	// call HasStuff. it'll take the value on top of the stack as it's parameter and push it's return value onto the stack.
-IL_000D:  brfalse.s   IL_0011	// if the top of the stack is false then skip to line IL_0011. Skipping the assignment.
-IL_000F:  ldc.i4.1    // push 1(true) onto the stack
-IL_0010:  stloc.0     // store that into local variable 0(someFlag)
-IL_0011:  ldloc.0     // put local variable 0(someFlag) onto the stack and call writeline
+IL_000D:  brfalse.s   IL_0011				// if the top of the stack is false then skip to line IL_0011. Skipping the assignment.
+IL_000F:  ldc.i4.1    						// push 1(true) onto the stack
+IL_0010:  stloc.0     						// store that into local variable 0(someFlag)
+IL_0011:  ldloc.0     						// put local variable 0(someFlag) onto the stack and call writeline
 IL_0012:  call        System.Console.WriteLine
 IL_0017:  ret         
 
@@ -92,14 +92,14 @@ void Main()
 	Console.WriteLine(someFlag);
 }
 
-IL_0000:  ldc.i4.1    // load a 1 onto the stack. because 1 is true.
-IL_0001:  stloc.0     // store the value on top of the stack to local variable 0. aka someFlag
-IL_0002:  ldloc.0     // push 1(true) onto the stack
-IL_0004:  ldstr       "stuff 2" // push "stuff 2" onto the stack
-IL_0009:  call        UserQuery.HasStuff // call HasStuff. it'll take the value on top of the stack as it's parameter and push it's return value onto the stack.
-IL_000E:  or          // Does a bitwise OR of two integer values, returns an integer. In this case a 0 or 1 that will be true/false
-IL_000F:  stloc.0     // Put the result into local variable 0(someFlag)
-IL_0010:  ldloc.0     // put local variable 0(someFlag) onto the stack and call writeline
+IL_0000:  ldc.i4.1    						// load a 1 onto the stack. because 1 is true.
+IL_0001:  stloc.0     						// store the value on top of the stack to local variable 0. aka someFlag
+IL_0002:  ldloc.0     						// push 1(true) onto the stack
+IL_0004:  ldstr       "stuff 2"				// push "stuff 2" onto the stack
+IL_0009:  call        UserQuery.HasStuff	// call HasStuff. it'll take the value on top of the stack as it's parameter and push it's return value onto the stack.
+IL_000E:  or          						// Does a bitwise OR of two integer values, returns an integer. In this case a 0 or 1 that will be true/false
+IL_000F:  stloc.0     						// Put the result into local variable 0(someFlag)
+IL_0010:  ldloc.0     						// put local variable 0(someFlag) onto the stack and call writeline
 IL_0011:  call        System.Console.WriteLine
 IL_0016:  ret         
 
@@ -120,16 +120,16 @@ void Main()
 	Console.WriteLine(someFlag);
 }
 
-IL_0000:  ldc.i4.1    // load a 1 onto the stack. because 1 is true.
-IL_0001:  stloc.0     // store the value on top of the stack to local variable 0. aka someFlag
-IL_0002:  ldloc.0     // push local varialbe 0(someFlag) onto the stack
-IL_0003:  brtrue.s    IL_0012	// if it's true then skip to line IL_0012. Skipping any other checks
-IL_0006:  ldstr       "stuff 3"
-IL_000B:  call        UserQuery.HasStuff
-IL_0010:  br.s        IL_0013
-IL_0012:  ldc.i4.1    
-IL_0013:  stloc.0     // someFlag
-IL_0014:  ldloc.0     // put local variable 0(someFlag) onto the stack and call writeline
+IL_0000:  ldc.i4.1    						// load a 1 onto the stack. because 1 is true.
+IL_0001:  stloc.0     						// store the value on top of the stack to local variable 0. aka someFlag
+IL_0002:  ldloc.0     						// push local varialbe 0(someFlag) onto the stack
+IL_0003:  brtrue.s    IL_0012				// if it's true then skip to line IL_0012. Skipping any other checks
+IL_0006:  ldstr       "stuff 3"				// push "stuff 3" onto the stack
+IL_000B:  call        UserQuery.HasStuff	// call HasStuff. it'll take the value on top of the stack as it's parameter and push it's return value onto the stack.
+IL_0010:  br.s        IL_0013				// Head on down to IL_0013 if the top of the stack is true
+IL_0012:  ldc.i4.1    						// Load a 1 onto the top of the stack
+IL_0013:  stloc.0     						// Put the result into local variable 0(someFlag)
+IL_0014:  ldloc.0     						// put local variable 0(someFlag) onto the stack and call writeline
 IL_0015:  call        System.Console.WriteLine
 IL_001A:  ret         
 
