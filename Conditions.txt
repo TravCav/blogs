@@ -122,7 +122,7 @@ void Main()
 
 IL_0000:  ldc.i4.1    						// load a 1 onto the stack. because 1 is true.
 IL_0001:  stloc.0     						// store the value on top of the stack to local variable 0. aka someFlag
-IL_0002:  ldloc.0     						// push local varialbe 0(someFlag) onto the stack
+IL_0002:  ldloc.0     						// push local variable 0(someFlag) onto the stack
 IL_0003:  brtrue.s    IL_0012				// if it's true then skip to line IL_0012. Skipping any other checks
 IL_0006:  ldstr       "stuff 3"				// push "stuff 3" onto the stack
 IL_000B:  call        UserQuery.HasStuff	// call HasStuff. it'll take the value on top of the stack as it's parameter and push it's return value onto the stack.
