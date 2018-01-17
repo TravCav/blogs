@@ -1,0 +1,106 @@
+void Main()
+{
+	var things = new int[]{1,2,3,4,5};
+	
+	Console.WriteLine("for");
+	for (int i = 0; i < 5; i++)
+	{
+		Console.WriteLine(things[i]);
+	}
+	
+	Console.WriteLine("foreach");
+	
+	foreach (var thing in things)
+	{
+		Console.WriteLine(thing);
+	}
+}
+
+
+
+
+
+IL_0000:  nop         
+IL_0001:  ldc.i4.5    
+IL_0002:  newarr      System.Int32
+IL_0007:  dup         
+IL_0008:  ldtoken     <PrivateImplementationDetails>{10382499-D239-40F2-97E4-4454A1856982}.$$method0x6000001-1
+IL_000D:  call        System.Runtime.CompilerServices.RuntimeHelpers.InitializeArray
+IL_0012:  stloc.0     // things
+
+
+IL_0013:  ldstr       "for"
+IL_0018:  call        System.Console.WriteLine
+IL_001D:  nop         
+
+IL_001E:  ldc.i4.0    
+IL_001F:  stloc.1     // i
+IL_0020:  br.s        IL_0031
+IL_0023:  ldloc.0     // things
+IL_0024:  ldloc.1     // i
+IL_0025:  ldelem.i4   
+IL_0026:  call        System.Console.WriteLine
+IL_002D:  ldloc.1     // i
+IL_002E:  ldc.i4.1    
+IL_002F:  add         
+IL_0030:  stloc.1     // i
+IL_0031:  ldloc.1     // i
+IL_0032:  ldc.i4.5    
+IL_0033:  clt         
+IL_0035:  stloc.3     // CS$4$0000
+IL_0036:  ldloc.3     // CS$4$0000
+IL_0037:  brtrue.s    IL_0022
+
+
+IL_0039:  ldstr       "foreach"
+IL_003E:  call        System.Console.WriteLine
+
+// Store things in loc 4
+IL_0045:  ldloc.0     // things
+IL_0046:  stloc.s     04 // CS$6$0001
+
+// Store 0 in loc 5
+IL_0048:  ldc.i4.0    
+IL_0049:  stloc.s     05 // CS$7$0002
+
+IL_004B:  br.s        IL_0062
+
+// get things
+IL_004D:  ldloc.s     04 // CS$6$0001
+// get 0
+IL_004F:  ldloc.s     05 // CS$7$0002
+
+// get element 0 and save a copy to loc 2
+IL_0051:  ldelem.i4   
+IL_0052:  stloc.2     // thing
+
+// do the writeline
+IL_0054:  ldloc.2     // thing
+IL_0055:  call        System.Console.WriteLine
+
+// get the index at 5, add 1, put it back
+IL_005C:  ldloc.s     05 // CS$7$0002
+IL_005E:  ldc.i4.1    
+IL_005F:  add         
+IL_0060:  stloc.s     05 // CS$7$0002
+
+// get 0 from 5
+IL_0062:  ldloc.s     05 // CS$7$0002
+
+// get thing from 4
+IL_0064:  ldloc.s     04 // CS$6$0001
+
+// get length of array and convert to int
+IL_0066:  ldlen       
+IL_0067:  conv.i4  
+
+// is 0 less than array length   
+IL_0068:  clt         
+
+// store result to 3 and put it back on the stack then go back up if there's still array items
+IL_006A:  stloc.3     // CS$4$0000
+IL_006B:  ldloc.3     // CS$4$0000
+IL_006C:  brtrue.s    IL_004D
+
+
+IL_006E:  ret         
