@@ -1,16 +1,17 @@
-You just can't talk about compression without mentioning Huffman coding.  Everything from fax machines, zip files, jpg's, mp3's, the list goes on and on. It's just the best thing ever. It works by taking advantage of the fact that some things occur more often than others. I know mind blow right?  So when transmitting that data we want to spend less effort on the stuff that happens more often. 
+Huffman coding
+More is less
 
-Let's look at this fun little quote. "to be or not to be"
-Oh boy that was fun. so deep.
+In my ongoing effort to make oversimplified explanations of complex things, I wanted to tackle Huffman coding. You just can’t talk about compression without mentioning Huffman coding, so it seems like something good to be aware of. Everything from fax machines, zip files, jpg’s, mp3’s, the list goes on and on. It’s just everywhere and it’s the best thing ever. It works by taking advantage of the fact that some things occur more often than others. So when transmitting data we want to spend less effort on the stuff that happens more often. I know mind blow right?
 
-If we were to encode that with ascii we'd use 8 bits for every character.  With 18 characters total including spaces, and 8 bit ascii encoding that ends up being 18...bytes... or the following 144 bit awesomeness.
+I’m not going to go too in depth, or get into anything theoretical, or math heavy, but I will walk through the process so you can see what happens at each step.
+
+Let’s start with ASCII encoding “to be or not to be” get our baseline. When it gets encoded with ASCII we use 8-bits(1 byte) for every character. With 18 characters total, including spaces, we’re looking at 18 bytes for this short message. Spelling out the bits we get the following 144 bit awesomeness.
 
 011101000110111100100000011000100110010100100000011011110111001000100000011011100110111101110100001000000111010001101111001000000110001001100101
+YEAH! BINARY! BEST DAY EVER! But we can do a lot better with Huffman coding. We can turn “to be or not to be” into just 47 bits.
 
-YEAH! BINARY! But with huffman coding we can turn "to be or not to be" into this.
 01010000111100010111100111010010000101000011110
-
-Only 47 bits! Just 1 bit shy of 6 bytes and 32.64% of the original ascii encoding. But how you ask. What miracle of modern science could do such a thing. Well put on a helmet, there's gonna be trees. 
+Only 47 bits! Just 1 bit shy of 6 bytes and 32.64% of the original ASCII encoding. But how you may ask. What miracle of modern science could do such a thing? Put on a helmet, there’s gonna be trees. Before we get started, check out the final tree for a minute and then I’ll walk through the process of how it’s made and how we use it to make the final encoding. You’ll usually see this as top-down instead of right to left, but it was easier for me to draw it this way with text.
 
 _ 00   -------0
               |
@@ -25,18 +26,14 @@ E 110  -------0   |
 N 1110 ---0   |
           |---1
 R 1111 ---1
+Once you’ve built an encoding tree you can find each character’s encoding by starting at the top of the tree on the right and every time you go up take a 0, and every time you go down take a 1. With this encoding we won’t need 8 bits for every character, and if we do that for every character we end up with an optimal encoding for each character.
 
-Start at the top of the tree and every time you go up take a 0, and every time you go down take a 1.  If we do that for every character we end up with an optimal encoding for each character.  
+With this encoding, the more often a character is used the less bits we need. The ones that were the most common like space, represented by an underscore, and ‘O’ now only get two bits. Those two characters alone account for half the quote, so that alone saves 54 bits. Even the least common characters only get half a byte. Amazing right?
 
-Now the more often a character is used the less bits we need. The ones that were the most common like space, represented by an underscore, and 'O' now only get two bits. Those two characters alone account for half the quote, so that alone saves 54 bits. Even the least common characters only get half a byte.  Amazing right?
-
-Now let's get to the fun part. Growing the tree. Just in time for arbor day!
-
-First let's gather up all those letters, get their counts, and order them but most to least.
+Now let’s get to the fun part. Building the tree! Let’s wipe the whiteboard clean and start from scratch. First make a distinct list of each letter in the quote. Then get the count or “frequency” for each character. Then order them from most to least. Should look like this.
 
 (_) 5, (O) 4, (T) 3, (B) 2, (E) 2, (N) 1, (R) 1
-
-The we start the process of combine smallest frequencies into groups, and reordering. It's going to shuffle around a lot, so we won't assign bits until the end. We start with our least used letters and we make tree branches.
+The process consists of combining smallest frequencies into groups, and reordering. It’s going to shuffle around a lot, so we won’t assign bits until the end. Let’s start with our least used letters and make a branch.
 
 _ 5
 O 4
@@ -46,10 +43,9 @@ E 2
 N 1 -+
      |--(NR) 2
 R 1 -+
+Here we get N and R as our first branch. We’ll call the branch NR and since N has a frequency of 1 and R has a frequency of 1, the whole branch has a frequency of 2. The branches frequency is important because we’ll be reordering and making new branches based on that number. For now it’s just a 2 like B and E so it can stay were it is.
 
-N and R are our first branch. We'll call that branch NR and the whole branch has a frequency of 2. The branches frequency is important because we'll be reordering and making new branches based on that number. For now it's just a 2 like B and E so it can stay were it is. 
-
-Next we'll make a new branch with (NR) and the next lowest frequency character. In this case E, which should give us an ENR branch. 
+Next we’ll make a new branch with (NR) and the next lowest frequency character. In this case E, which should give us an ENR branch.
 
 _ 5
 O 4
@@ -60,8 +56,7 @@ E 2 ----------+
 N 1 -+        |
      |-(NR) 2-+
 R 1 -+
-
-Since our new group has a frequency of 4 so we'll reorder it between O and T. Here's what it looks like after the move.
+This is our first reorder. Our new group has a frequency of 4 so we’ll move it between O and T. Here’s what it looks like after the move.
 
 _ 5
 O 4
@@ -72,8 +67,7 @@ N 1 -+        |
 R 1 -+
 T 3
 B 2
-
-Then just like before we'll group the lowest frequency characters (T) 3 and (B) 2 to get a new (TB) 5 branch and reorder it so it goes between (_) 5 and (O) 4.  
+Then just like before we’ll group the lowest frequency characters (T) 3 and (B) 2 to get a new (TB) 5 branch and reorder it so it goes between (_) 5 and (O) 4.
 
 _ 5
 T 3 -+
@@ -85,8 +79,7 @@ E 2 ----------+
 N 1 -+        |
      |-(NR) 2-+
 R 1 -+
-
-Then we just continue that process until we've grouped everything. Next we group (O) 4 with (ENR) 4 and move (OENR) 8 to the top.
+Then we just continue that process until we’ve grouped everything. Next we group (O) 4 with (ENR) 4 and move (OENR) 8 to the top.
 
 O 4 --------------------+
                         |--(OENR) 8
@@ -99,7 +92,6 @@ _ 5
 T 3 -+
      |--(TB) 5
 B 2 -+
-
 Lather, rinse, repeat. (TB) 5 with (_) 5 and move (_TB) 10 to the top. And if we did everything correctly our final group should have all the characters and a frequency of 18.
 
 _ 5-----------+
@@ -115,8 +107,7 @@ E 2 ----------+         |
 N 1 -+        |
      |-(NR) 2-+
 R 1 -+
-
-And that's how we got the tree we used to make new codes.
+And that’s how we got the tree we used to make new codes.
 
 _ 00   -------0
               |
@@ -131,17 +122,42 @@ E 110  -------0   |
 N 1110 ---0   |
           |---1
 R 1111 ---1
+So then we take our message “to be or not to be”, look up each character’s code and swap out the letters.
 
-So then we just swap out the letters of "to be or not to be" with their codes to get 01010000111100010111100111010010000101000011110.
+to be or not to be
+t(010) o(10) _(00) b(011) e(110) _(00) o(10) r(1111) _(00) n(1110) o(10) t(010) _(00) t(010) o(10) _(00) b(011) e(110)
+01010000111100010111100111010010000101000011110
+But how do we know if the 1110 in the middle of all that is an N or if it’s the end of a 011 and the start of a 10? Unfortunately we don’t. We have to read the whole sequence from the beginning. Unlike ASCII, you can’t just pick some random multiple of 8 and start reading from that position.
 
-But how do we know if the 1110 in the middle of all that is an N or if it's the end of a 011 and start of a 10? We unfortunately we don't. Unless we read the whole string from the beginning.
+To know what each bit is we have to read everything from the start to figure out what everything is. Look at the codes next to each character. See how each one is never the beginning of another one? That means we just need to read the bits from left to right and eventually we’ll match on only one thing exactly. And that’s really the key. If we keep reading bits we’ll narrow it down to just one match.
 
-Unlike ascii, you can't just pick some random multiple of 8 and start reading from that position.
-To know what each bit is we have to read everything from the start to figure out what everything is. Look at the codes and see how each one is never the beginning of another one? That means we just need to read the bits from left to right and eventually we'll match on only one thing exactly. 
+Let’s start from the beginning and try it. 0 could start _, T, or B, but it doesn’t match exactly so we’ll have to read in the next bit. 01 matches the start of T and B and now we’ve excluded _. One more bit and we have 010 which matches T. OMG THAT’S THE FIRST LETTER IT WORKS!
 
-Let's start from the beginning and try it. 0 could start _, T, or B, but it doesn't match exactly so we'll have to read in the next bit. 01 matches the start of T and B and now we've excluded _.  One more bit and we have 010 which matches T. OMG THAT'S THE FIRST LETTER IT WORKS!
+Then start the process over from that position until we get a match again. This time we only make it another two bits before we match 10 with O. Yeah! letters! So our first two characters are “TO” and then next two 00 are a space. And so on and so forth. Fun right?
 
-Okay but what about after that? We start the process over from that position until we get a match again. This time we only make it another two bits before we match 10 with O. yeah! letters!  So our first two characters are "TO" and then next two 00 are a space.  And so on and so forth. It's like magic.
+If you want to play with other messages try this online demo. It’s pretty amazing. https://people.ok.ubc.ca/ylucet/DS/Huffman.html
 
-Happy arbor day. Thanks for planting a tree with me. Now got plant a few trees of your own.
+Hopefully that was simplified enough but not too much. That’s just the tip of iceberg really. Check https://en.wikipedia.org/wiki/Huffman_coding to continue down the rabbit hole.
 
+Programming
+One clap, two clap, three clap, forty?
+By clapping more or less, you can signal to us which stories really stand out.
+
+Go to the profile of Trav Cav
+Trav Cav
+More from Trav Cav
+String.Equals and == are basically the same
+Go to the profile of Trav Cav
+Trav Cav
+More from Trav Cav
+Wise Bits of bitwise wisdom
+Go to the profile of Trav Cav
+Trav Cav
+Also tagged Programming
+How I made $200,000 when I was 16 years old
+Go to the profile of Rodney Gainous Jr
+Rodney Gainous Jr
+Responses
+Trav Cav
+Be the first to write a response…
+Trav Cav
