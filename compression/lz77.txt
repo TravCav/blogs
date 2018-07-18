@@ -1,0 +1,8 @@
+Pease porridge hot, pease porridge cold, Pease porridge in the pot, nine days old. Some like it hot, some like it cold, Some like it in the pot, nine days old.
+Pease porridge hot, p(20,14)cold, (41,15)in the pot nine days old. Some like it hot, s(18,12)cold,(37,14)(77,26)
+159 113
+
+
+Pease porridge hot. Pease porridge cold. Pease porridge in the pot, nine days old. Some like it hot. Some like it cold. Some like it in the pot, nine days old.
+Pease porridge hot. (20,15)cold(21,17)in the pot, nine days old. Some like it hot(18,15)cold(37,15)(77,26)
+160 107
