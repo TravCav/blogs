@@ -1,8 +1,8 @@
-So, I came across this exciting bit of code on the internet once. 
+I came across this exciting bit of code on the internet once. 
 if (directiveToken.Value == "use strict")
 	this.StrictMode = true;
 
-And of course, the first thing that came to mind was, "why are there no brackets!?". I know it's not required, but readability is important. Let the minimizers deal with that. But after getting over that I thought, "why not just assign StrictMode the value of the condition?" Like so:
+It caught my attention because of the lack of brackets around the if block. I know it's not required, but readability is important. But if you're going to save lines why not just put it all on the same line?  And while you're at it why not condense the the whole if block. If you need this.StrictMode to equal true when directiveToken.Value equals "use strict", then why not just assign this.StrictMode the value of the condition?" Like so:
 this.StrictMode = (directiveToken.Value == "use strict");
 
 But that changes the functionality. I did a quick check around in the code to verify, and the original expected functionality is that it only ever sets StrictMode to true. If we did the code above, it would cause a horribly sneaky bug. StrictMode is sometimes set to true earlier in the class, and the above code could sometimes override it with a false value.  We need a line that only ever sets StrictMode to true. That seems reasonable. But we have a few options available. So what's the best way to do it?
