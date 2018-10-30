@@ -1,0 +1,32 @@
+<html>
+<head>
+</head>
+<body>
+<img src='Penguins.jpg' id='my-image' />
+
+
+<script>
+var img = document.getElementById('my-image');
+var canvas = document.createElement('canvas');
+var width = img.width;
+var height = img.height;
+//console.log(width,height);
+canvas.width = width;
+canvas.height = height;
+canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+
+var pixelData = canvas.getContext('2d').getImageData(0, 0, width, height).data;
+var pixelValues = [];
+
+for(y=height-1;y>-1;y--) {
+	for(x=width-1;x>-1;x--) {
+		var index = x + y * width * 4;
+		pixelValues.push([pixelData[index],pixelData[index+1],pixelData[index+2]]);
+		console.log(pixelData[index],pixelData[index+1],pixelData[index+2]);
+	}
+}
+
+
+</script>
+</body>
+</html>
