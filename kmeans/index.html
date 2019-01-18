@@ -24,8 +24,8 @@
 <button onclick="container.remove(clusterLines);">Hide Custers</button>
 </div>
 <script src="http://code.jquery.com/jquery-1.4.3.min.js"></script>
-<script src="https://rawgithub.com/mrdoob/three.js/master/build/three.js"></script>
-<script src="http://rawgithub.com/jbeuckm/K-Means/master/build/kmeans.min.js"></script>
+<script src="three.js"></script>
+<script src="kmeans.js"></script>
 
 <script>
 var img = document.getElementById('my-image');
@@ -71,10 +71,11 @@ for(y=height-1;y>-1;y--) {
         [-1,1],
         [-1,1]
     ];
-    //var points = kmeans.generateRandomPoints(ranges, 500);
+    
+   /// var points = generateRandomPoints(ranges, 500);
 
-    var means = kmeans.algorithm(points, 5).means;
-    var assignments = kmeans.assignPointsToMeans(points, means);
+    var means = algorithm(points, 8).means;
+    var assignments = assignPointsToMeans(points, means);
 
     var materials = [
         new THREE.LineBasicMaterial({ color:0x1f77b4 }),
@@ -117,7 +118,6 @@ for(y=height-1;y>-1;y--) {
         particle = new THREE.Vector3(point[0], point[1], point[2]);
 
         particles.vertices.push(particle);
-        particles.colors.push(new THREE.Color("rgb(" + point[0] + ", " + point[1] + ", " + point[2] + ")"));
 
     }
 
