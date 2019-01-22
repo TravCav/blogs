@@ -91,13 +91,7 @@ for(y=height-1;y>-1;y--) {
 
 
     var particles = new THREE.Geometry();
-    var pMaterial = new THREE.PointsMaterial({ size:.01});
-
-
-    // create the particle system
-    var particleSystem = new THREE.Points(
-            particles,
-            pMaterial);
+   
 
 
     for (var i = 0, l = points.length; i < l; i++) {
@@ -114,12 +108,19 @@ for(y=height-1;y>-1;y--) {
 
         clusterLines.add(line);
 
-
         particle = new THREE.Vector3(point[0], point[1], point[2]);
-
+        
         particles.vertices.push(particle);
+        particles.colors.push(new THREE.Color(point[0]+.5, point[1]+.5, point[2]+.5));
 
     }
+    var pMaterial = new THREE.PointsMaterial({ size:.01, vertexColors: THREE.VertexColors});
+
+
+// create the particle system
+var particleSystem = new THREE.Points(
+        particles,
+        pMaterial);
 
     //container.add(clusterLines);
     container.add(particleSystem);
