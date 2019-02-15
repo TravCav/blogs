@@ -18,7 +18,8 @@ Supervised
 
 
 Markov Chains
-	
+minmax
+
 Boosting
 Bagging
 
