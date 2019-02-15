@@ -1,0 +1,24 @@
+types
+	Unsupervised
+	Supervised
+
+Unsupervised
+	kmeans
+	Gaussian mixture models
+	Hidden Markov models
+
+Supervised
+	decision trees
+	random forest
+	adaboost
+		xgboost
+	knn
+	Naïve Bayes classifier
+	Neural Networks
+
+
+Markov Chains
+	
+Boosting
+Bagging
+

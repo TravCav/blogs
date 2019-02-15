@@ -37,7 +37,7 @@
         canvas.getContext('2d').drawImage(img, 0, 0, width, height);
 
         var pixelData = canvas.getContext('2d').getImageData(0, 0, width, height).data;
-        //var pixelData2 = canvas.getContext('2d').getImageData(0, height, width, height*2).data;
+        var pixelData2 = canvas.getContext('2d').getImageData(0, 0, width, height);
         var points = [];
 
         /*
@@ -54,6 +54,7 @@
             points.push([(pixelData[index] - 127) / 127, (pixelData[index + 1] - 127) / 127, (pixelData[index + 2] - 127) / 127]);
         }
 
+      
         var renderer = new THREE.WebGLRenderer();
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
@@ -74,18 +75,18 @@
 
         /// var points = generateRandomPoints(ranges, 500);
 
-        var means = algorithm(points, 8).means;
+        var means = algorithm(points, 16).means;
         var assignments = assignPointsToMeans(points, means);
 
-        // // for (var index = 0; index < pixelData.length; index += 4) {
-        // //     pixelData[index] = 127;//means[i][0];
-        // //     pixelData[index + 1] = 127;//means[i][0];
-        // //     pixelData[index + 2]  = 127;//means[i][0];
-        // //     pixelData[index + 3]  = 127;//means[i][0];
-        // // }
+        for (var index = 0; index < pixelData2.length; index += 4) {
+            pixelData2.data[index] = 127;//means[i][0];
+            pixelData2.data[index + 1] = 127;//means[i][0];
+            pixelData2.data[index + 2]  = 127;//means[i][0];
+            pixelData2.data[index + 3]  = 127;//means[i][0];
+        }
 
-        // // let ctx = canvas.getContext('2d');
-        // // ctx.putImageData(pixelData, 0, 0);
+        let ctx = canvas.getContext('2d');
+        ctx.putImageData(pixelData2, 0, 0);
 
         var materials = [];
         //     new THREE.LineBasicMaterial({ color: 0x1f77b4 }),

@@ -1,32 +1,76 @@
-<html>
+<!DOCTYPE html>
+
 <head>
 </head>
-<body>
-<img src='Penguins.jpg' id='my-image' />
+
+<body bgcolor="#808080">
+	
+	<canvas id="canvas1"></canvas>
+	<canvas id="canvas2"></canvas>
+	<script>
+	
+		var canvas1 = document.getElementById("canvas1");
+		var ctx1 = canvas1.getContext("2d");
+		
+		var canvas2 = document.getElementById("canvas2");
+		var ctx2 = canvas2.getContext("2d");
+		
+		pic1 = new Image();
+		pic1.src = 'penguins2.jpg';
+		pic1.setAttribute('crossOrigin', '');
+		pic1.crossOrigin = "Anonymous";
+
+		pic1.onload = function () {
+			canvas1.height = pic1.height;
+			canvas1.width = pic1.width;
+			ctx1.fillStyle = "blue";
+			ctx1.fillRect(0, 0, canvas1.width, canvas1.height);
+
+			ctx1.drawImage(pic1, 0, 0);
+
+			canvas2.height = pic1.height;
+			canvas2.width = pic1.width;
+			ctx2.fillStyle = "blue";
+			ctx2.fillRect(0, 0, canvas2.width, canvas2.height);
+
+			CopyPixels();
+		};
 
 
-<script>
-var img = document.getElementById('my-image');
-var canvas = document.createElement('canvas');
-var width = img.width;
-var height = img.height;
-//console.log(width,height);
-canvas.width = width;
-canvas.height = height;
-canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+		CopyPixels = function() {
+			console.log("begin");
+			var pixelData = ctx1.getImageData(0, 0, canvas1.width, canvas1.height);
+			var pixelValues = [];
 
-var pixelData = canvas.getContext('2d').getImageData(0, 0, width, height).data;
-var pixelValues = [];
-
-for(y=height-1;y>-1;y--) {
-	for(x=width-1;x>-1;x--) {
-		var index = x + y * width * 4;
-		pixelValues.push([pixelData[index],pixelData[index+1],pixelData[index+2]]);
-		console.log(pixelData[index],pixelData[index+1],pixelData[index+2]);
-	}
-}
+			ctx2.putImageData(pixelData, 0, 0);
+			console.log("end");
+		};
 
 
-</script>
+		// // var img = document.getElementById('my-image');
+
+		// // var canvas = document.getElementById('mycanvas');
+		// // var width = img.width;
+		// // var height = img.height;
+		// // //console.log(width,height);
+		// // canvas.width = width;
+		// // canvas.height = height;
+		// // canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+
+		// // var pixelData = canvas.getContext('2d').getImageData(0, 0, width, height).data;
+		// // var pixelValues = [];
+
+		// // for (y = height - 1; y > -1; y--) {
+		// // 	for (x = width - 1; x > -1; x--) {
+		// // 		var index = x + y * width * 4;
+		// // 		pixelValues.push([pixelData[index], pixelData[index + 1], pixelData[index + 2]]);
+		// // 		//console.log(pixelData[index],pixelData[index+1],pixelData[index+2]);
+		// // 	}
+		// // }
+
+		// // canvas.putImageData(pixels, 0, 0);
+
+	</script>
 </body>
+
 </html>
