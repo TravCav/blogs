@@ -5,7 +5,7 @@ types
 Unsupervised
 	kmeans
 	Gaussian mixture models
-	Hidden Markov models
+	
 
 Supervised
 	decision trees
@@ -16,9 +16,12 @@ Supervised
 	Naïve Bayes classifier
 	Neural Networks
 
+Markov
+	Markov Chains
+	Hidden Markov models
+	mcmc
 
-Markov Chains
-minmax
+MinMax
 
 Boosting
 Bagging
