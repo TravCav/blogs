@@ -33,3 +33,9 @@ Distances
 Boosting
 Bagging
 
+matholes
+ variables
+ examples
+ problems
+ solutions
+ 
