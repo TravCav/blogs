@@ -1,11 +1,17 @@
 types
 	Unsupervised
+		learns from test data that has not been labeled, classified or categorized. Instead of responding to feedback, unsupervised learning identifies commonalities in the data and reacts based on the presence or absence of such commonalities in each new piece of data.
+
 	Supervised
+		maps an input to an output based on example input-output pairs. 
 
 Unsupervised
 	kmeans
 	Gaussian mixture models
-	
+
+categorization
+prediction
+
 
 Supervised
 	decision trees
