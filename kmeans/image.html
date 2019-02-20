@@ -52,32 +52,64 @@
 			}
 
 			// init groups
-			for (let index = 0; index < groupCout - 1; index++) {
-				groups.push([Math.random() * 255, Math.random() * 255, Math.random() * 255])
+			for (let index = 0; index < groupCount - 1; index++) {
+				groups.push([Math.random() * 255, Math.random() * 255, Math.random() * 255, 0]);
 			}
 
-			// find closest group 
-			for (let index = 0; index < colorArray.length; index++) {
-				let dataPoint = colorArray[index].data;
+			// do it 10 times for now...
+			for (let loopIndex = 0; loopIndex < 10; loopIndex++) {
 
-				let distance = 99999;
+				// find closest group 
+				for (let index = 0; index < colorArray.length; index++) {
+					let dataPoint = colorArray[index];
 
-				for (let groupIndex = 0; groupIndex < groups.length; groupIndex++) {
-					var d1 = datapoint[index][1] - groups[groupIndex][1];
-					var d2 = datapoint[index][2] - groups[groupIndex][2];
-					var d3 = datapoint[index][3] - groups[groupIndex][3];
-					var groupDist = Math.sqrt((d1 * d1) + (d2 * d2) + (d3 * d3));
-					if (groupDist < distance) {
-						distance = groupDist;
-						dataPoint.group = groupIndex;
+					let distance = 99999;
+
+					for (let groupIndex = 0; groupIndex < groups.length; groupIndex++) {
+						var d1 = dataPoint[0] - groups[groupIndex][1];
+						var d2 = dataPoint[1] - groups[groupIndex][2];
+						var d3 = dataPoint[2] - groups[groupIndex][3];
+						var groupDist = Math.sqrt((d1 * d1) + (d2 * d2) + (d3 * d3));
+						if (groupDist < distance) {
+							distance = groupDist;
+							dataPoint[3] = groupIndex;
+						}
 					}
+				}
+
+				// reset groups
+				for (let index = 0; index < groupCount - 1; index++) {
+					groups.push([0, 0, 0, 0]);
+				}
+
+				// add up locations
+				for (let index = 0; index < colorArray.length; index++) {
+					let dataPoint = colorArray[index];
+					groups[dataPoint[3]][0] = dataPoint[0];
+					groups[dataPoint[3]][1] = dataPoint[1];
+					groups[dataPoint[3]][2] = dataPoint[2];
+					groups[dataPoint[3]][3]++;
+				}
+
+				// average
+				for (let index = 0; index < groupCount - 1; index++) {
+					groups[index][0] = groups[index][0] / groups[index][3];
+					groups[index][1] = groups[index][1] / groups[index][3];
+					groups[index][2] = groups[index][2] / groups[index][3];
 				}
 			}
 
-			
+			var newPixels = ctx1.getImageData(0, 0, canvas1.width, canvas1.height);;
+			for (let index = 0; index < colorArray.length; index+=4) {
+					let dataPoint = colorArray[index];
+					newPixels.data[index]= groups[dataPoint[3]][2][0];
+					newPixels.data[index+1]= groups[dataPoint[3]][2][1];
+					newPixels.data[index+2]= groups[dataPoint[3]][2][2];
+					newPixels.data[index+3]= 255;
+			}
+			ctx2.putImageData(newPixels, 0, 0);
 
-
-
+			console.log('done');
 		}
 
 		function CopyPixels() {
@@ -85,8 +117,8 @@
 
 
 			var colors = [];
-			for (let index = 0; index < pixelData.length; index += 4) {
-				colors.push([pixelData[index], pixelData[index + 1], pixelData[index + 2]]);
+			for (let index = 0; index < pixelData.data.length; index += 4) {
+				colors.push([pixelData.data[index], pixelData.data[index + 1], pixelData.data[index + 2],0]);
 			}
 
 			ctx2.putImageData(pixelData, 0, 0);
