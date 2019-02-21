@@ -15,7 +15,7 @@
 		var ctx2 = canvas2.getContext("2d");
 
 		pic1 = new Image();
-		pic1.src = 'penguins2.jpg';
+		pic1.src = 'tulips.jpg';
 		pic1.setAttribute('crossOrigin', '');
 		pic1.crossOrigin = "Anonymous";
 
@@ -33,8 +33,8 @@
 			ctx2.fillRect(0, 0, canvas2.width, canvas2.height);
 
 			var colorArray = CopyPixels();
-			var groups = 8
-			kmeans(colorArray, 8);
+			var groups = 2;
+			kmeans(colorArray, groups);
 
 
 
@@ -49,16 +49,16 @@
 			}
 
 			// do it 10 times for now...
-			for (let loopIndex = 0; loopIndex < 10; loopIndex++) {
+			for (let loopIndex = 0; loopIndex < 20; loopIndex++) {
 
 				// find closest group 
 				for (let index = 0; index < colorArray.length; index++) {
 					let distance = 99999;
 
 					for (let groupIndex = 0; groupIndex < groups.length; groupIndex++) {
-						var d1 = colorArray[index][0] - groups[groupIndex][1];
-						var d2 = colorArray[index][1] - groups[groupIndex][2];
-						var d3 = colorArray[index][2] - groups[groupIndex][3];
+						var d1 = colorArray[index][0] - groups[groupIndex][0];
+						var d2 = colorArray[index][1] - groups[groupIndex][1];
+						var d3 = colorArray[index][2] - groups[groupIndex][2];
 						var groupDist = Math.sqrt((d1 * d1) + (d2 * d2) + (d3 * d3));
 						if (groupDist < distance) {
 							distance = groupDist;
@@ -83,20 +83,22 @@
 
 				// average
 				for (let index = 0; index < groupCount; index++) {
-					groups[index][0] = groups[index][0] / groups[index][3];
-					groups[index][1] = groups[index][1] / groups[index][3];
-					groups[index][2] = groups[index][2] / groups[index][3];
+					if (groups[index][3] > 0) {
+						groups[index][0] = groups[index][0] / groups[index][3];
+						groups[index][1] = groups[index][1] / groups[index][3];
+						groups[index][2] = groups[index][2] / groups[index][3];
+					}
 				}
 				console.log(loopIndex);
 			}
 
 			var newPixels = ctx1.getImageData(0, 0, canvas1.width, canvas1.height);;
 			for (let index = 0; index < colorArray.length; index++) {
-					let index2 = index*4;
-					newPixels.data[index2]= Math.floor(groups[colorArray[index][3]][2][0]);
-					newPixels.data[index2+1]= Math.floor(groups[colorArray[index][3]][2][1]);
-					newPixels.data[index2+2]= Math.floor(groups[colorArray[index][3]][2][2]);
-					newPixels.data[index2+3]= 255;
+				let index2 = index * 4;
+				newPixels.data[index2] = Math.floor(groups[colorArray[index][3]][0]);
+				newPixels.data[index2 + 1] = Math.floor(groups[colorArray[index][3]][1]);
+				newPixels.data[index2 + 2] = Math.floor(groups[colorArray[index][3]][2]);
+				newPixels.data[index2 + 3] = 255;
 			}
 			ctx2.putImageData(newPixels, 0, 0);
 
@@ -109,7 +111,7 @@
 
 			var colors = [];
 			for (let index = 0; index < pixelData.data.length; index += 4) {
-				colors.push([pixelData.data[index], pixelData.data[index + 1], pixelData.data[index + 2],0]);
+				colors.push([pixelData.data[index], pixelData.data[index + 1], pixelData.data[index + 2], 0]);
 			}
 
 			ctx2.putImageData(pixelData, 0, 0);
