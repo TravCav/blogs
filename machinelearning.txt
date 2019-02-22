@@ -44,4 +44,10 @@ matholes
  examples
  problems
  solutions
+
+Bayes theorem 
+	spam detection
  
+violajones
+	harr-like features
+	AdaBoost
